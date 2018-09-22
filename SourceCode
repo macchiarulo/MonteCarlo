@@ -1,0 +1,31 @@
+# MonteCarlo
+import numpy as np
+import math
+import plotly as plt
+import plotly.graph_objs as go
+
+
+def asset_price(S, drift, volatility, dt, X):
+    return S * math.exp((drift - (volatility ** 2) / 2) * dt + volatility * math.sqrt(dt) * X)
+
+
+S_0 = 35
+drift = 0.05
+volatility = 0.25
+dt = 1 / 365
+N_days = 365
+
+path_matrix = np.zeros((N_days + 1, 1))
+path_matrix[0, 0] = S_0  # Initial value
+
+random_variable = np.random.randn(N_days)  # 365 independent values generated from standard normal random variables.
+
+for i in range(N_days):
+    path_matrix[i + 1, 0] = asset_price(path_matrix[i, 0], drift, volatility, dt, random_variable[i])
+
+# Generate plot :
+asset = go.Scatter(y=path_matrix[:, 0], name="Simulated asset", opacity=0.8)
+layout = go.Layout(title='Simulated asset path')
+
+# Plot :
+plt.offline.plot({"data": [asset], "layout": layout})
